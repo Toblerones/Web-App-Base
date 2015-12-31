@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-
+<script src="jquery-1.9.1.js"></script>
 <script src="sendJSON.js"></script>
 <script>
 var jsonReqeust;
@@ -9,7 +9,7 @@ var jsonResponse;
 $(document).ready(
 function() {
 	$("#case1").click( function(e){
-		$('#dataToSend').val(JSON.stringify(""));
+		$('#dataToSend').val(JSON.stringify("{'request':'caseA','detail':'xx','textOne':'fafaf'}"));
 	});	
 	
 	$("#case2").click( function(e){

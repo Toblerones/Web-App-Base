@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.github.toblerones.annotation.WebAppRequestAnnotation;
 import com.github.toblerones.base.gson.JsonObjectUtil;
+import com.github.toblerones.web.app.base.interceptor.configuration.InterceptorConfigurationHelper;
 import com.github.toblerones.web.app.base.object.JsonMessageReqBase;
 import com.github.toblerones.web.app.base.object.JsonMessageRespBase;
 import com.github.toblerones.web.app.base.processor.RequestProcessor;
@@ -30,8 +31,7 @@ public class JsonMsgController<T> {
 	@Autowired
 	private WorkContext workContext;
 	
-	@Autowired
-	private InterceptorConfigurationHelper interceptorConfigurationHelper;
+//	private InterceptorConfigurationHelper interceptorConfigurationHelper;
 	
 	@Autowired(required = false)
 	@Qualifier("customizedRequestBase")
@@ -79,8 +79,9 @@ public class JsonMsgController<T> {
     			}
 	    	}
 		    
-	    	String requestObjName = interceptorConfigurationHelper.getRequestObjectName(cmd);
-	    	String requestProcessorName = interceptorConfigurationHelper.getRequestProcessorName(cmd);
+	    	InterceptorConfigurationHelper interceptorConfigurationHelper = new InterceptorConfigurationHelper();
+	    	String requestObjName = interceptorConfigurationHelper.getRequestObjectClassByCmd(cmd);
+	    	String requestProcessorName = interceptorConfigurationHelper.getRequestProcessorClassByCmd(cmd);
 	    	
 	 		try {
 	 			jsonReq= (T) JsonObjectUtil.convertStringToObject(requestStr, requestObjName);
