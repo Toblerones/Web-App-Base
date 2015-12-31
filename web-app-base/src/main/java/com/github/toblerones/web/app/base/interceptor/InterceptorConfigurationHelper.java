@@ -3,7 +3,8 @@ package com.github.toblerones.web.app.base.interceptor;
 import java.util.Map;
 
 public class InterceptorConfigurationHelper {
-
+	// TODO change to read from json data instead of XML
+	
 	private Map<String, String> objectsName;
 	private Map<String, String> requestProcessorsName;
 	
