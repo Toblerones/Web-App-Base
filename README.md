@@ -1,6 +1,6 @@
 # Web-App-Base
 
-2016J0001TL:
+* 2016J0001TL:
 1. Enhance Interceptor logic
 2. Fixed Work Context issue as user, request data scope are not working as expected.
 3. Fixed Json response content setting.
