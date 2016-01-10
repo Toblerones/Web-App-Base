@@ -144,20 +144,23 @@ public class JsonMsgController<T, E>{
 		this.webContext = (WebApplicationContext) this.context;
 		Object obj = webContext.getServletContext().getAttribute(key);
 		if(obj==null){
-			T t = null;
 			try {
-				t = cls.newInstance();
+				obj = cls.newInstance();
 			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
 			System.out.println("generic new obj " + key);
-			webContext.getServletContext().setAttribute(key, t);
-			if(t instanceof WorkContext){
-				((WorkContext) t).resetRequestContext();
-				((WorkContext) t).setUserContext(getDataFromApplicationDataScope(key+"USER_CONTEXT", HashMap.class));
+			webContext.getServletContext().setAttribute(key, obj);
+			if(obj instanceof WorkContext){
+				((WorkContext) obj).resetRequestContext();
+				((WorkContext) obj).setUserContext(getDataFromApplicationDataScope(key+"USER_CONTEXT", HashMap.class));
 			}
-			return t;
+			return (T) obj;
 		}else{
+			if(obj instanceof WorkContext){
+				((WorkContext) obj).resetRequestContext();
+				((WorkContext) obj).setUserContext(getDataFromApplicationDataScope(key+"USER_CONTEXT", HashMap.class));
+			}
 			return (T) webContext.getServletContext().getAttribute(key);
 		}
 	}

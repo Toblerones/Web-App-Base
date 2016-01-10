@@ -10,12 +10,22 @@ public class CaseA implements RequestProcessor{
 
 	@Override
 	public String process(WorkContext workContext) {
-		if(workContext.getRequestData("checkpoint1") != null){
-			System.out.println((int)workContext.getRequestData("checkpoint1"));
-			workContext.putRequestData("checkpoint1",(int)workContext.getRequestData("checkpoint1")+1 );
+		if(workContext.getRequestData("RequestData") != null){
+			
+			workContext.putRequestData("RequestData",(int)workContext.getRequestData("RequestData")+1 );
 		}else{
-			workContext.putRequestData("checkpoint1", 1);
+			workContext.putRequestData("RequestData", 1);
 		}
+		
+		if(workContext.getUserData("UserData") != null){
+			
+			workContext.putUserData("UserData",(int)workContext.getUserData("UserData")+1 );
+		}else{
+			workContext.putUserData("UserData", 1);
+		}
+//		
+//		System.out.println("RequestData = [ " + (int)workContext.getRequestData("RequestData") + "]");
+//		System.out.println("UserData = [ " + (int)workContext.getUserData("UserData") + "]");
 		
 		CaseARequestObj req = (CaseARequestObj)workContext.getJsonRequestObjectFromContext();
 		CaseAResponseObj resp = new CaseAResponseObj();
