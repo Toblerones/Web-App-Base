@@ -1,7 +1,6 @@
 package com.github.toblerones.web.app.base.interceptor.configuration;
 
 import java.lang.reflect.Type;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -41,5 +40,9 @@ public class InterceptorConfigurationHelper {
 
 	public String getRequestProcessorClassByCmd(String cmd) {
 		return messageHandlerMaps.get(cmd).getRequestProcessorClass();
+	}
+	
+	public String getResponseObjectClassByCmd(String cmd) {
+		return messageHandlerMaps.get(cmd).getResponseObjectClass();
 	}
 }

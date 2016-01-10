@@ -2,9 +2,9 @@ package test.web.app.request.obj;
 
 import com.github.toblerones.annotation.WebAppRequestAnnotation;
 
-
+@WebAppRequestAnnotation(cmd = "request", remarks = "testRemark")
 public class CaseARequestBase {
-	@WebAppRequestAnnotation(isCMD = true, remarks = "testRemark")
+	
 	private String request;
 
 	private String detail;

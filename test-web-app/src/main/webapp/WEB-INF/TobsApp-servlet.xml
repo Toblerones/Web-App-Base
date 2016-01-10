@@ -16,16 +16,9 @@
 	<context:annotation-config/> 
 	<context:component-scan base-package="com.github.toblerones.web.app.base.interceptor" />
    
-   <bean id="workContext" class="com.github.toblerones.web.app.context.WorkContext"/>
    
-   <bean id='userContext' class="com.github.toblerones.web.app.context.UserContext" scope="session">	
-   		<aop:scoped-proxy />
-	</bean>
-	<bean id='requestContext' class="com.github.toblerones.web.app.context.RequestContext" scope="request">	
-   		<aop:scoped-proxy />
-	</bean>
+   
+
 	
-	<!-- 
-	<bean id="requestBaseWithAnnotation" class="test.web.app.request.obj.CaseARequestBase"/>
-	 -->
+	
 </beans>

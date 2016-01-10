@@ -1,10 +1,12 @@
 package com.github.toblerones.web.app.base.interceptor;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,26 +14,28 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.github.toblerones.annotation.WebAppRequestAnnotation;
 import com.github.toblerones.base.gson.JsonObjectUtil;
 import com.github.toblerones.web.app.base.interceptor.configuration.InterceptorConfigurationHelper;
 import com.github.toblerones.web.app.base.object.JsonMessageReqBase;
-import com.github.toblerones.web.app.base.object.JsonMessageRespBase;
 import com.github.toblerones.web.app.base.processor.RequestProcessor;
 import com.github.toblerones.web.app.context.WorkContext;
 
+/**
+ * 
+ * @author Luo
+ *
+ * @param <T>
+ * @param <E>
+ */
 @Controller
-public class JsonMsgController<T> {
+public class JsonMsgController<T, E>{
 	
 	@Autowired
 	private ApplicationContext context;
-	
-	@Autowired
-	private WorkContext workContext;
-	
-//	private InterceptorConfigurationHelper interceptorConfigurationHelper;
+	private WebApplicationContext webContext;
 	
 	@Autowired(required = false)
 	@Qualifier("customizedRequestBase")
@@ -39,17 +43,28 @@ public class JsonMsgController<T> {
 	
 	@Autowired(required = false)
 	@Qualifier("customizedResponseBase")
-	private T customizedResponseBase;
+	private E customizedResponseBase;
 	
 	private final String defaultErrorResponse = "{\"responseStatus\":\"error\"}";
 	
-	//The @RequestMapping annotation ensures that HTTP requests to /msgchannel are mapped to the jsonInterceptor() method.
-	// Accepts all kinds of http operation.
+	private final static String KEY_CONFIGURATION_HELPER = "INTERCEPTOR_CONFIG";
+	private final static String KEY_WORKCONTEXT = "WORK_CONTEXT";
+	
+	/**
+	 * The @RequestMapping annotation ensures that HTTP requests to /msgchannel are mapped to the jsonInterceptor() method.
+	 * Accepts all kinds of http operation.
+	 * 
+	 * @param requestStr
+	 * @param request
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
 	@RequestMapping("/msgchannel")
-	public @ResponseBody String msgInterceptor(@RequestBody String requestStr, HttpServletRequest request) {	
+	public void msgInterceptor(@RequestBody String message, 
+			HttpServletRequest request, HttpServletResponse response) {
+		
 		try{
 	    	String responseStr = defaultErrorResponse;
-		    JsonMessageRespBase jsonResp = new JsonMessageRespBase();
 
 		    String cmd = null; 
 		    T jsonReq = null;
@@ -60,53 +75,90 @@ public class JsonMsgController<T> {
 		    	customizedRequestBase = (T) new JsonMessageReqBase();
 		    }
 		    
-	    	// get the class type
-	    	jsonReq = (T)JsonObjectUtil.convertStringToObject(requestStr, customizedRequestBase.getClass());
+	    	jsonReq = (T)JsonObjectUtil.convertStringToObject(message, customizedRequestBase.getClass());
 	    	
-	    	Field[] fields = customizedRequestBase.getClass().getDeclaredFields(); //obtain field object
-	    	for(Field field : fields){
-	    		field.setAccessible(true);
-    			Annotation[] annotations = field.getDeclaredAnnotations();
+	    	// Get the CMD according to the annotation of request class
+	    	Class<? extends Object> aClass = customizedRequestBase.getClass();
+	    	Annotation annotation = aClass.getAnnotation(WebAppRequestAnnotation.class);
 
-    			for(Annotation annotation : annotations){
-    				if(annotation instanceof WebAppRequestAnnotation){
-    					WebAppRequestAnnotation myAnnotation = (WebAppRequestAnnotation) annotation;
-    			    	if(myAnnotation.isCMD()){
-    			    		cmd = (String) field.get(jsonReq);
-    			    		break;
-    			    	}
-    			    }
-    			}
+	    	if(annotation instanceof WebAppRequestAnnotation){
+	    		WebAppRequestAnnotation myAnnotation = (WebAppRequestAnnotation) annotation;
+	    	    Field field = aClass.getDeclaredField(myAnnotation.cmd());
+	    	    field.setAccessible(true);
+	    	    cmd = (String) field.get(jsonReq);
 	    	}
-		    
-	    	InterceptorConfigurationHelper interceptorConfigurationHelper = new InterceptorConfigurationHelper();
+			    	
+	    	InterceptorConfigurationHelper interceptorConfigurationHelper = 
+	    			getDataFromApplicationDataScope(KEY_CONFIGURATION_HELPER, InterceptorConfigurationHelper.class);
+	    	
+	    	String sessionId = request.getSession().getId();
+	    	WorkContext workContext = getDataFromApplicationDataScope(KEY_WORKCONTEXT + sessionId, WorkContext.class);
+	    	
+	    	// Retrieve request mapping from intercepter configuration
 	    	String requestObjName = interceptorConfigurationHelper.getRequestObjectClassByCmd(cmd);
 	    	String requestProcessorName = interceptorConfigurationHelper.getRequestProcessorClassByCmd(cmd);
 	    	
+	    	// Call the processor to handle the request.
 	 		try {
-	 			jsonReq= (T) JsonObjectUtil.convertStringToObject(requestStr, requestObjName);
-	 
-			    RequestProcessor processor = (RequestProcessor) context.getBean(Class.forName(requestProcessorName));
-			    
-			    workContext.putJsonRequestObjectToContext(jsonReq);
-			    workContext.putHttpServletRequestObjectToContext(request);
-			
-			    String result = processor.process(workContext);
-			    System.out.println(result);
-			    jsonResp = workContext.getJsonResponseObjectFromContext();
+	 			jsonReq= (T) JsonObjectUtil.convertStringToObject(message, requestObjName);
+	 			workContext.putJsonRequestObjectToContext(jsonReq);
+
+	 			RequestProcessor processor = (RequestProcessor) context.getBean(Class.forName(requestProcessorName));
+	 			
+	 			//TODO check result?
+	 			processor.process(workContext);
+	
+			    E customizedResponseBase = (E)workContext.getJsonResponseObjectFromContext();
+			    responseStr = JsonObjectUtil.convertObjectToString(customizedResponseBase);
 			} catch (Exception e){
-				jsonResp.setErrorCode("GE0001");
-				jsonResp.setResponseStatus("error");
+				// TODO SafeNet - customized.
+//				jsonResp.setErrorCode("GE0001");
+//				jsonResp.setResponseStatus("error");
+//				jsonResp.setCmd(cmd);
+//		    	responseStr = JsonObjectUtil.convertObjectToString(jsonResp);
 				e.printStackTrace();			
 			}
 
-	 		jsonResp.setCmd(cmd);
-	    	responseStr = JsonObjectUtil.convertObjectToString(jsonResp);
-	        return responseStr;
+	 		// Always be a string as JSON Response
+	 		response.setContentType("application/json; charset=utf-8");
+	 		response.setCharacterEncoding("UTF-8");
+	 		response.getOutputStream().write(responseStr.getBytes("UTF-8"));
+	        response.getOutputStream().flush();
 			
 		}catch(Exception e){
+			// TODO SafeNet - customized.
 			e.printStackTrace();
-			return defaultErrorResponse;
+			try {
+				response.getOutputStream().print("error");
+				response.getOutputStream().flush();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+		}
+	}
+	
+	@SuppressWarnings({ "unchecked", "hiding" })
+	private <T> T getDataFromApplicationDataScope(String key, Class<T> cls){
+		this.webContext = (WebApplicationContext) this.context;
+		Object obj = webContext.getServletContext().getAttribute(key);
+		if(obj==null){
+			T t = null;
+			try {
+				t = cls.newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+			System.out.println("generic new obj " + key);
+			webContext.getServletContext().setAttribute(key, t);
+			if(t instanceof WorkContext){
+				((WorkContext) t).resetRequestContext();
+				((WorkContext) t).setUserContext(getDataFromApplicationDataScope(key+"USER_CONTEXT", HashMap.class));
+			}
+			return t;
+		}else{
+			return (T) webContext.getServletContext().getAttribute(key);
 		}
 	}
 }
