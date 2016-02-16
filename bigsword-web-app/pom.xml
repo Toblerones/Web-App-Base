@@ -1,20 +1,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>toblerones</groupId>
-  <artifactId>web-app-base</artifactId>
-  <version>1.0.0</version>
+  <groupId>bigsword</groupId>
+  <artifactId>bigsword-web-app</artifactId>
+  <version>0.0.1</version>
   
-	<dependencies>
+   <dependencies>
+ 
 		<dependency>
 			<groupId>toblerones</groupId>
-			<artifactId>app-base-gson-utils</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
+			<artifactId>web-app-base</artifactId>
+			<version>1.0.0</version>
+		</dependency>	
+	  	<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
-		  </dependency>
+		 </dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -28,6 +29,11 @@
 			<artifactId>spring-context</artifactId>
 			<version>4.1.6.RELEASE</version>
 		</dependency>
+ 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>4.1.6.RELEASE</version>
+		</dependency>
 		
 		<!-- The spring-aop module provides an AOP Alliance-compliant aspect-oriented 
 			programming implementation allowing you to define -->
@@ -36,7 +42,7 @@
 			<artifactId>spring-aop</artifactId>
 			<version>4.1.6.RELEASE</version>
 		</dependency>
-		
+ 
 		<!-- The spring-webmvc module (also known as the Web-Servlet module) contains 
 			Spring’s model-view-controller (MVC) and REST Web Services implementation 
 			for web applications -->
@@ -45,7 +51,7 @@
 			<artifactId>spring-webmvc</artifactId>
 			<version>4.1.6.RELEASE</version>
 		</dependency>
-		
+ 
 		<!-- The spring-web module provides basic web-oriented integration features 
 			such as multipart file upload functionality and the initialization of the 
 			IoC container using Servlet listeners and a web-oriented application context -->
@@ -53,6 +59,34 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
 			<version>4.1.6.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>4.1.6.RELEASE</version>
+		</dependency>
+		
+		<dependency>
+		  	<groupId>org.activiti</groupId>
+		  	<artifactId>activiti-engine</artifactId>
+		  	<version>5.19.0</version>
+		</dependency>
+		<dependency>
+		  	<groupId>org.activiti</groupId>
+		  	<artifactId>activiti-spring</artifactId>
+		  	<version>5.19.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>bigsword</groupId>
+			<artifactId>bigsword-eleave-web</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.35</version>
 		</dependency>
 	</dependencies>
 </project>

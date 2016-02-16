@@ -299,6 +299,7 @@ public class JsonObjectUtil {
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> T loadObjectFromClassPathJsonFileWithGenericType(String dataFileName, Type type){
 		T result=null;
 		try {

@@ -14,6 +14,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.github.toblerones.annotation.WebAppRequestAnnotation;
@@ -30,7 +31,7 @@ import com.github.toblerones.web.app.context.WorkContext;
  * @param <T>
  * @param <E>
  */
-@Controller
+@Controller("jsonMsgController")
 public class JsonMsgController<T, E>{
 	
 	@Autowired
@@ -59,7 +60,7 @@ public class JsonMsgController<T, E>{
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	@RequestMapping("/msgchannel")
+	@RequestMapping(headers = "Accept=application/json", method=RequestMethod.POST)
 	public void msgInterceptor(@RequestBody String message, 
 			HttpServletRequest request, HttpServletResponse response) {
 		
@@ -134,8 +135,7 @@ public class JsonMsgController<T, E>{
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			}
-			
+			}		
 		}
 	}
 	
