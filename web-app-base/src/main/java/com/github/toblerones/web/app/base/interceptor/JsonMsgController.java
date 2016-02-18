@@ -146,7 +146,9 @@ public class JsonMsgController<T, E>{
 		if(obj==null){
 			try {
 				obj = cls.newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
 			System.out.println("generic new obj " + key);
