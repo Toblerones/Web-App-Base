@@ -2,6 +2,9 @@
 
 * Coming release: Real SafeNet, UTest. Integrated with Activiti
 
+* 2016F0001TL:
+  1. update error handle for jdk < 1.7
+
 * 2016J0002TL:
   1. Urgent fix the request data that was kept in session.
   
