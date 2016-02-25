@@ -104,7 +104,7 @@ public class JsonMsgController<T, E>{
 	 			jsonReq= (T) JsonObjectUtil.convertStringToObject(message, requestObjName);
 	 			workContext.putJsonRequestObjectToContext(jsonReq);
 
-	 			RequestProcessor processor = (RequestProcessor) context.getBean(Class.forName(requestProcessorName));
+	 			RequestProcessor processor = (RequestProcessor) context.getBean(requestProcessorName);
 	 			
 	 			//TODO check result?
 	 			processor.process(workContext);

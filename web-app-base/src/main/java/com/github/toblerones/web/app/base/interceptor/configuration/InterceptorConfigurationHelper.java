@@ -39,7 +39,7 @@ public class InterceptorConfigurationHelper {
 	}
 
 	public String getRequestProcessorClassByCmd(String cmd) {
-		return messageHandlerMaps.get(cmd).getRequestProcessorClass();
+		return cmd + "Processor";
 	}
 	
 	public String getResponseObjectClassByCmd(String cmd) {
