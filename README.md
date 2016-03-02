@@ -2,6 +2,9 @@
 
 * Coming release: Real SafeNet, UTest. Integrated with Activiti
 
+* 2016F0002TL:
+  1. update eclipse project setting
+
 * 2016F0001TL:
   1. update error handle for jdk < 1.7
 
