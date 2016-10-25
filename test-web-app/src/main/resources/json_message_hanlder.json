@@ -1,7 +1,12 @@
 {
 	'caseA':{
 		'requestObjectClass':'test.web.app.request.obj.CaseARequestObj',
-		'requestProcessorClass':'test.web.app.processors.CaseA',
+		'requestProcessorClass':'test.web.app.processors.CaseAProcessor',
 		'responseObjectClass':'test.web.app.request.obj.CaseAResponseObj'
-	}
+	},
+  'caseB':{
+	'requestObjectClass':'test.web.app.request.obj.CaseBRequestObj',
+	'requestProcessorClass':'test.web.app.processors.CaseBProcessor',
+	'responseObjectClass':'test.web.app.request.obj.CaseBResponseObj'
+  }
 }

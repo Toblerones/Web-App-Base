@@ -21,6 +21,8 @@ public class WorkContext{
 	private Map<String, Object> userContext;
 	private Map<String, Object> requestContext;
 
+	private String uuid;
+
 	public void setUserContext(Map<String, Object> userContext) {
 		this.userContext = userContext;
 	}
@@ -74,7 +76,7 @@ public class WorkContext{
 	}
 	
 	public <T> T getJsonRequestObjectFromContext(){
-		return getRequestData(JSON_REQUEST_OBJECT);
+		return getRequestData(JSON_REQUEST_OBJECT + uuid);
 	}
 	public <T> T getJsonResponseObjectFromContext(){
 		return getRequestData(JSON_RESPONSE_OBJECT);
@@ -83,7 +85,7 @@ public class WorkContext{
 		return getRequestData(JSON_RESPONSE_STRING);
 	}
 	public <T> void putJsonRequestObjectToContext(T jsonRequest){
-		putRequestData(JSON_REQUEST_OBJECT, jsonRequest);
+		putRequestData(JSON_REQUEST_OBJECT + uuid, jsonRequest);
 	}
 	public <T> void putJsonResponseObjectToContext(T jsonResponse){
 		putRequestData(JSON_RESPONSE_OBJECT, jsonResponse);
@@ -101,5 +103,13 @@ public class WorkContext{
 		}
 		
 //		return (T) getApplicationData(INTERCEPTOR_CONFIGURATION_OBJECT_KEY);
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 }

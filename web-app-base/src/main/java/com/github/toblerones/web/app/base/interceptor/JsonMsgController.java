@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -63,7 +64,7 @@ public class JsonMsgController<T, E>{
 	@RequestMapping(headers = "Accept=application/json", method=RequestMethod.POST)
 	public void msgInterceptor(@RequestBody String message, 
 			HttpServletRequest request, HttpServletResponse response) {
-		
+
 		try{
 	    	String responseStr = defaultErrorResponse;
 
@@ -87,14 +88,15 @@ public class JsonMsgController<T, E>{
 	    	    Field field = aClass.getDeclaredField(myAnnotation.cmd());
 	    	    field.setAccessible(true);
 	    	    cmd = (String) field.get(jsonReq);
-	    	}
+				System.out.println(cmd);
+			}
 			    	
 	    	InterceptorConfigurationHelper interceptorConfigurationHelper = 
 	    			getDataFromApplicationDataScope(KEY_CONFIGURATION_HELPER, InterceptorConfigurationHelper.class);
 	    	
 	    	String sessionId = request.getSession().getId();
 	    	WorkContext workContext = getDataFromApplicationDataScope(KEY_WORKCONTEXT + sessionId, WorkContext.class);
-	    	
+
 	    	// Retrieve request mapping from intercepter configuration
 	    	String requestObjName = interceptorConfigurationHelper.getRequestObjectClassByCmd(cmd);
 	    	String requestProcessorName = interceptorConfigurationHelper.getRequestProcessorClassByCmd(cmd);
@@ -143,6 +145,10 @@ public class JsonMsgController<T, E>{
 	private <T> T getDataFromApplicationDataScope(String key, Class<T> cls){
 		this.webContext = (WebApplicationContext) this.context;
 		Object obj = webContext.getServletContext().getAttribute(key);
+
+		// Initilize a UUID for each HTTP request.
+		UUID uuid = UUID.randomUUID();
+		System.out.println("UUID " + uuid.toString());
 		if(obj==null){
 			try {
 				obj = cls.newInstance();
@@ -155,12 +161,14 @@ public class JsonMsgController<T, E>{
 			webContext.getServletContext().setAttribute(key, obj);
 			if(obj instanceof WorkContext){
 				((WorkContext) obj).resetRequestContext();
-				((WorkContext) obj).setUserContext(getDataFromApplicationDataScope(key+"USER_CONTEXT", HashMap.class));
+				((WorkContext) obj).setUuid(uuid.toString());
+				((WorkContext) obj).setUserContext(getDataFromApplicationDataScope(key + "USER_CONTEXT", HashMap.class));
 			}
 			return (T) obj;
 		}else{
 			if(obj instanceof WorkContext){
 				((WorkContext) obj).resetRequestContext();
+				((WorkContext) obj).setUuid(uuid.toString());
 				((WorkContext) obj).setUserContext(getDataFromApplicationDataScope(key+"USER_CONTEXT", HashMap.class));
 			}
 			return (T) webContext.getServletContext().getAttribute(key);
