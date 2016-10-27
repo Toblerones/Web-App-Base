@@ -8,20 +8,17 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.github.toblerones.web.app.base.interceptor.configuration.InterceptorConfigurationHelper;
 
-public class WorkContext{
+public class WorkContext implements Cloneable{
 	
 	public static final String JSON_REQUEST_OBJECT = "json_request_object";
 	public static final String JSON_RESPONSE_OBJECT = "json_response_object";
 	public static final String JSON_RESPONSE_STRING = "json_response_string";
-	public static final String HTTP_SERVLET_REQUEST = "http_servlet_request";
 	public static final String INTERCEPTOR_CONFIGURATION_OBJECT_KEY = "interceptor_configuration_object";
 	
 	private ApplicationContext applicationContext;
 	
 	private Map<String, Object> userContext;
 	private Map<String, Object> requestContext;
-
-	private String uuid;
 
 	public void setUserContext(Map<String, Object> userContext) {
 		this.userContext = userContext;
@@ -76,7 +73,7 @@ public class WorkContext{
 	}
 	
 	public <T> T getJsonRequestObjectFromContext(){
-		return getRequestData(JSON_REQUEST_OBJECT + uuid);
+		return getRequestData(JSON_REQUEST_OBJECT);
 	}
 	public <T> T getJsonResponseObjectFromContext(){
 		return getRequestData(JSON_RESPONSE_OBJECT);
@@ -85,7 +82,7 @@ public class WorkContext{
 		return getRequestData(JSON_RESPONSE_STRING);
 	}
 	public <T> void putJsonRequestObjectToContext(T jsonRequest){
-		putRequestData(JSON_REQUEST_OBJECT + uuid, jsonRequest);
+		putRequestData(JSON_REQUEST_OBJECT, jsonRequest);
 	}
 	public <T> void putJsonResponseObjectToContext(T jsonResponse){
 		putRequestData(JSON_RESPONSE_OBJECT, jsonResponse);
@@ -101,15 +98,23 @@ public class WorkContext{
 		}catch(Exception e){
 			return null;
 		}
-		
-//		return (T) getApplicationData(INTERCEPTOR_CONFIGURATION_OBJECT_KEY);
 	}
 
-	public String getUuid() {
-		return uuid;
+	/**
+	 * Duplicate a work context for processor use.
+	 * This will soli request scope in multi-threads mode.
+	 * @return A workContext contains data in applicaiton and user scope.
+	 */
+	public WorkContext generateProcessorContext() {
+		WorkContext processorContext = null;
+		try {
+			processorContext = (WorkContext)super.clone();
+
+			processorContext.resetRequestContext();
+			return processorContext;
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException("Bang!!!!!!.... WorkContext generation issue.");
+		}
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
 }

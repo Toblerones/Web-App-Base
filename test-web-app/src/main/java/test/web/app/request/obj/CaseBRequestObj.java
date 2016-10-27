@@ -3,13 +3,13 @@ package test.web.app.request.obj;
 import com.github.toblerones.web.app.base.object.JsonMessageReqBase;
 
 public class CaseBRequestObj extends JsonMessageReqBase{
-	private String textOne;
+	private String textTwo;
 
-	public String getTextOne() {
-		return textOne;
+	public String getTextTwo() {
+		return textTwo;
 	}
 
-	public void setTextOne(String textOne) {
-		this.textOne = textOne;
+	public void setTextTwo(String textTwo) {
+		this.textTwo = textTwo;
 	}
 }	

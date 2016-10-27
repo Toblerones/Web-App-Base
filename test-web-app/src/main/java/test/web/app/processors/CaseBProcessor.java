@@ -28,7 +28,7 @@ public class CaseBProcessor implements RequestProcessor{
 		
 		CaseBRequestObj req = (CaseBRequestObj)workContext.getJsonRequestObjectFromContext();
 		CaseBResponseObj resp = new CaseBResponseObj();
-		resp.setFieldA("get TextOne data: [" + req.getTextOne() + "]");
+		resp.setFieldA("get TextTwo data: [" + req.getTextTwo() + "]");
 		resp.setResponseStatus("success");
 		workContext.putJsonResponseObjectToContext(resp);
 		return "DONE";
