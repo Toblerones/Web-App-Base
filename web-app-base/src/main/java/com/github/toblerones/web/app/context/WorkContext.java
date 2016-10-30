@@ -8,7 +8,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.github.toblerones.web.app.base.interceptor.configuration.InterceptorConfigurationHelper;
 
-public class WorkContext implements Cloneable{
+public class WorkContext{
 	
 	public static final String JSON_REQUEST_OBJECT = "json_request_object";
 	public static final String JSON_RESPONSE_OBJECT = "json_response_object";
@@ -101,20 +101,18 @@ public class WorkContext implements Cloneable{
 	}
 
 	/**
-	 * Duplicate a work context for processor use.
-	 * This will soli request scope in multi-threads mode.
-	 * @return A workContext contains data in applicaiton and user scope.
+	 * Duplicate a work context for processor use. This will soli request scope in multi-threads mode.
+	 * However for App & user scope it will be a reference of single one.
+	 * @return A workContext contains data in application and user scope.
 	 */
 	public WorkContext generateProcessorContext() {
-		WorkContext processorContext = null;
-		try {
-			processorContext = (WorkContext)super.clone();
+		WorkContext processorContext = new WorkContext();
 
-			processorContext.resetRequestContext();
-			return processorContext;
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException("Bang!!!!!!.... WorkContext generation issue.");
-		}
+		processorContext.setUserContext(this.userContext);
+		processorContext.setApplicationContext(this.applicationContext);
+		//processorContext = (WorkContext)super.clone();
+		//processorContext.resetRequestContext();
+		return processorContext;
 	}
 
 }
